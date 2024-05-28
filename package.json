@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "amqplib": "^0.10.4",
+    "prom-client": "^15.1.2"
+  }
+}

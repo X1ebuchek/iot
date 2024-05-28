@@ -1,0 +1,20 @@
+{
+  "name": "client",
+  "version": "1.0.0",
+  "description": "",
+  "main": "measuring_device.js",
+  "scripts": {
+    "start": "node measuring_device.js",
+    "start1": "node conditioner.js",
+    "start2": "node heater.js",
+    "start3": "node humidifier.js",
+    "start4": "node ventilation.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.6.8",
+    "express": "^4.19.2"
+  }
+}

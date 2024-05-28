@@ -1,0 +1,135 @@
+volumes:
+  grafana-data:
+
+networks:
+  monitoring:
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"  # Порт Prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"  # Порт Grafana
+    volumes:
+      - grafana-data:/var/lib/grafana
+    networks:
+        - monitoring
+
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    ports:
+      - "5672:5672"
+      - "15692:15692"
+      - "15672:15672"
+    networks:
+      - monitoring
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "wait", "--timeout", "60", "rabbitmq" ]
+      interval: 30s
+      retries: 3
+      start_period: 30s
+    command: >
+      bash -c "
+        rabbitmq-plugins enable --offline rabbitmq_management &&
+        rabbitmq-plugins enable --offline rabbitmq_prometheus &&
+        rabbitmq-server
+      "
+
+  server:
+    build: test/
+    command: npm start
+    ports:
+      - "8080:8080"
+    expose:
+      - 8080
+    depends_on:
+      - rabbitmq
+    networks:
+      - monitoring
+
+
+
+  client1:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    environment:
+      - PORT1=12104
+      - PORT2=12105
+      - PORT3=12106
+      - PORT4=12107
+      - NUMBER=1
+    ports:
+      - "12104-12107:12104-12107"
+    depends_on:
+      - server
+      - rabbitmq
+    networks:
+      - monitoring
+
+  client2:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    environment:
+      - PORT1=12108
+      - PORT2=12109
+      - PORT3=12110
+      - PORT4=12111
+      - NUMBER=2
+    ports:
+      - "12108-12111:12108-12111"
+    depends_on:
+      - server
+      - rabbitmq
+    networks:
+      - monitoring
+
+  client3:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    environment:
+      - PORT1=12112
+      - PORT2=12113
+      - PORT3=12114
+      - PORT4=12115
+      - NUMBER=3
+    ports:
+      - "12112-12115:12112-12115"
+    depends_on:
+      - server
+      - rabbitmq
+    networks:
+      - monitoring
+
+  client4:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    environment:
+      - PORT1=12116
+      - PORT2=12117
+      - PORT3=12118
+      - PORT4=12119
+      - NUMBER=4
+    ports:
+      - "12116-12119:12116-12119"
+    depends_on:
+      - server
+      - rabbitmq
+    networks:
+      - monitoring
+
+
+
+
+
